@@ -1,6 +1,10 @@
+import { Button } from "@/components/ui/button";
+
 function App() {
   return (
-    <div className="bg-red-300 w-screen h-screen text-3xl">hello world</div>
+    <div className="w-screen h-screen text-3xl">
+      <Button>hello</Button>
+    </div>
   );
 }
 
