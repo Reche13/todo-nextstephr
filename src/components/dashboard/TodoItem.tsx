@@ -183,7 +183,7 @@ export function TodoItem({
                   size="icon"
                   onClick={() => onEdit(todo)}
                   disabled={todo.completed}
-                  className="h-8 w-8"
+                  className="h-8 w-8 cursor-pointer"
                   title="Edit todo"
                 >
                   <Edit2 className="h-4 w-4" />
@@ -195,7 +195,7 @@ export function TodoItem({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                      className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
                       title="Delete todo"
                       disabled={isDeleting || deleteTodo.isPending}
                     >
@@ -214,6 +214,7 @@ export function TodoItem({
                     <DialogFooter className="flex justify-end gap-2">
                       <Button
                         variant="outline"
+                        className="cursor-pointer"
                         onClick={() => setOpenDialog(false)}
                         disabled={isDeleting}
                       >
@@ -223,6 +224,7 @@ export function TodoItem({
                         variant="destructive"
                         onClick={handleDelete}
                         disabled={isDeleting}
+                        className="cursor-pointer"
                       >
                         {isDeleting ? "Deleting..." : "Delete"}
                       </Button>

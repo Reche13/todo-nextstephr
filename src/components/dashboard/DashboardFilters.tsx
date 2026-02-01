@@ -46,7 +46,7 @@ export function DashboardFilters({
         {searchQuery && (
           <button
             onClick={() => onSearchChange("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
           >
             <X className="h-4 w-4" />
           </button>
@@ -62,7 +62,7 @@ export function DashboardFilters({
               key={f}
               onClick={() => onFilterChange(f)}
               className={cn(
-                "px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                "px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer",
                 filter === f
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:bg-muted/80",
@@ -75,7 +75,7 @@ export function DashboardFilters({
 
         {/* Sort */}
         <Select value={sort} onValueChange={(v) => onSortChange(v as SortType)}>
-          <SelectTrigger className="w-45">
+          <SelectTrigger className="w-45 cursor-pointer">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>
@@ -103,7 +103,7 @@ export function DashboardFilters({
           )}
           <button
             onClick={onClearFilters}
-            className="text-primary hover:underline ml-auto"
+            className="text-primary hover:underline ml-auto cursor-pointer"
           >
             Clear all
           </button>

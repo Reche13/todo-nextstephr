@@ -84,7 +84,7 @@ export function TodoForm({ onSuccess }: TodoFormProps) {
                 control={control}
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
+                    <SelectTrigger className="cursor-pointer">
                       <SelectValue placeholder="Select priority" />
                     </SelectTrigger>
                     <SelectContent>
@@ -104,7 +104,7 @@ export function TodoForm({ onSuccess }: TodoFormProps) {
           <Button
             type="submit"
             disabled={createTodo.isPending}
-            className="w-full"
+            className="w-full cursor-pointer"
           >
             {createTodo.isPending ? (
               <>

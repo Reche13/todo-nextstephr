@@ -114,7 +114,7 @@ export function TodoEditDialog({
                   control={control}
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger>
+                      <SelectTrigger className="cursor-pointer">
                         <SelectValue placeholder="Select priority" />
                       </SelectTrigger>
                       <SelectContent>
@@ -136,11 +136,20 @@ export function TodoEditDialog({
               </div>
             </div>
           </CardContent>
-          <CardFooter className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={onClose}>
+          <CardFooter className="flex justify-end gap-2 mt-6">
+            <Button
+              className="cursor-pointer"
+              type="button"
+              variant="outline"
+              onClick={onClose}
+            >
               Cancel
             </Button>
-            <Button type="submit" disabled={updateTodo.isPending}>
+            <Button
+              className="cursor-pointer"
+              type="submit"
+              disabled={updateTodo.isPending}
+            >
               {updateTodo.isPending ? "Saving..." : "Save Changes"}
             </Button>
           </CardFooter>

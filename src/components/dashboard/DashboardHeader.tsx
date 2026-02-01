@@ -26,7 +26,11 @@ export function DashboardHeader() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={handleSignOut} className="w-fit">
+            <Button
+              variant="outline"
+              onClick={handleSignOut}
+              className="w-fit cursor-pointer"
+            >
               <LogOut className="h-4 w-4 mr-2" />
               Sign Out
             </Button>
