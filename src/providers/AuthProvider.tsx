@@ -22,8 +22,6 @@ export const AuthContext = createContext<AuthContextType | undefined>(
   undefined,
 );
 
-const siteURL = import.meta.env.VITE_SITE_URL;
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -60,7 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
       options: {
-        emailRedirectTo: siteURL,
+        emailRedirectTo: `${import.meta.env.VITE_SITE_URL}`,
         data: {
           name,
         },
