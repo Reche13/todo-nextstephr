@@ -26,3 +26,19 @@ export interface UpdateTodoInput {
   priority?: TodoPriority;
   due_date?: string | null;
 }
+
+export type FilterType = "all" | "active" | "completed";
+export type SortType = "newest" | "oldest" | "priority" | "due_date";
+export type EmptyStateType =
+  | "empty"
+  | "no-results"
+  | "no-active"
+  | "no-completed";
+
+export interface DashboardStats {
+  total: number;
+  completed: number;
+  active: number;
+  completionRate: number;
+  overdue: number;
+}

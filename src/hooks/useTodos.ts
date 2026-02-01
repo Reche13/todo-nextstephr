@@ -56,6 +56,7 @@ export function useUpdateTodo() {
       id: string;
       input: UpdateTodoInput;
     }) => {
+      console.log("updateig");
       const { data, error } = await supabase
         .from("todos")
         .update(input)

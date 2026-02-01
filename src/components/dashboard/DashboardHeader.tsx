@@ -1,0 +1,39 @@
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "react-hot-toast";
+
+import { Button } from "@/components/ui/button";
+// import { ThemeToggle } from "@/components/ThemeToggle";
+import { LogOut } from "lucide-react";
+
+export function DashboardHeader() {
+  const { user, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success("Signed out successfully");
+  };
+
+  return (
+    <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm border-b">
+      <div className="container mx-auto px-4 py-4 max-w-7xl">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold mb-1 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+              My Todos
+            </h1>
+            <p className="text-muted-foreground text-sm md:text-base">
+              Welcome back,{" "}
+              <span className="font-medium">{user?.email?.split("@")[0]}</span>
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={handleSignOut} className="w-fit">
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
