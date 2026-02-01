@@ -2,7 +2,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
-// import { ThemeToggle } from "@/components/ThemeToggle";
 import { LogOut } from "lucide-react";
 
 export function DashboardHeader() {

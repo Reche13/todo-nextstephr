@@ -75,7 +75,7 @@ export function DashboardFilters({
 
         {/* Sort */}
         <Select value={sort} onValueChange={(v) => onSortChange(v as SortType)}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-45">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>

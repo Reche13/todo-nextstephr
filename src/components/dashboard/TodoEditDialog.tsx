@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import type { Todo } from "@/types";
 import { useUpdateTodo } from "@/hooks/useTodos";
 import { Button } from "@/components/ui/button";
@@ -21,15 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-const todoSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
-  priority: z.enum(["low", "medium", "high"]),
-  due_date: z.string().optional().nullable(),
-});
-
-type TodoFormData = z.infer<typeof todoSchema>;
+import { todoSchema, type TodoFormData } from "@/schemas/editTodoSchema";
 
 interface TodoEditDialogProps {
   todo: Todo | null;

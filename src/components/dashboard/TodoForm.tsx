@@ -1,6 +1,6 @@
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+
 import { useCreateTodo } from "@/hooks/useTodos";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,17 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 import { Plus } from "lucide-react";
-
-const todoSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
-  priority: z.enum(["low", "medium", "high"]),
-  due_date: z.string().optional(),
-});
-
-type TodoFormData = z.infer<typeof todoSchema>;
+import { todoSchema, type TodoFormData } from "@/schemas/createTodoSchema";
 
 interface TodoFormProps {
   onSuccess?: () => void;
