@@ -5,11 +5,13 @@ import Dashboard from "@/pages/Dashboard";
 import { ProtectedRoute } from "@/components/common/ProtectedRoute";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { QueryProvider } from "./providers/QueryProvider";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <QueryProvider>
       <AuthProvider>
+        <Toaster />
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />

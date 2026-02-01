@@ -62,7 +62,7 @@ const Dashboard = () => {
   }, [todos]);
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-red-100 to-violet-50 flex flex-col">
+    <div className="min-h-screen bg-zinc-50 flex flex-col">
       <DashboardHeader />
 
       {/* Main Content Area */}
