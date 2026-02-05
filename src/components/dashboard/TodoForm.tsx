@@ -15,6 +15,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { todoSchema, type TodoFormData } from "@/schemas/createTodoSchema";
+import { AICreateTodoForm } from "@/components/dashboard/AICreateTodoForm";
 
 interface TodoFormProps {
   onSuccess?: () => void;
@@ -121,5 +122,14 @@ export function TodoForm({ onSuccess }: TodoFormProps) {
         </form>
       </CardContent>
     </Card>
+  );
+}
+
+export function TodoFormWithAI({ onSuccess }: TodoFormProps) {
+  return (
+    <div className="space-y-4">
+      <AICreateTodoForm onSuccess={onSuccess} />
+      <TodoForm onSuccess={onSuccess} />
+    </div>
   );
 }
