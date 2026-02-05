@@ -14,14 +14,20 @@ Deno.serve(async (req) => {
     if (!prompt || typeof prompt !== "string") {
       return new Response(JSON.stringify({ error: "prompt is required" }), {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+        },
       });
     }
 
     if (prompt.length > 800) {
       return new Response(JSON.stringify({ error: "prompt too long" }), {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+        },
       });
     }
 
@@ -95,7 +101,13 @@ Input:
       const errText = await res.text();
       return new Response(
         JSON.stringify({ error: "AI request failed", raw: errText }),
-        { status: 500, headers: { "Content-Type": "application/json" } },
+        {
+          status: 500,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
+        },
       );
     }
 
@@ -105,7 +117,10 @@ Input:
     if (!text) {
       return new Response(JSON.stringify({ error: "No AI output" }), {
         status: 500,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+        },
       });
     }
 
@@ -120,24 +135,42 @@ Input:
     } catch {
       return new Response(
         JSON.stringify({ error: "AI returned invalid JSON", raw: cleaned }),
-        { status: 500, headers: { "Content-Type": "application/json" } },
+        {
+          status: 500,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
+        },
       );
     }
 
     if (!Array.isArray(parsed)) {
       return new Response(
         JSON.stringify({ error: "AI did not return an array", raw: parsed }),
-        { status: 500, headers: { "Content-Type": "application/json" } },
+        {
+          status: 500,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
+        },
       );
     }
 
     return new Response(JSON.stringify(parsed), {
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json",
+      },
     });
   } catch (err) {
     return new Response(JSON.stringify({ error: String(err) }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json",
+      },
     });
   }
 });
