@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Todo } from "@/types";
 import { useUpdateTodo, useDeleteTodo } from "@/hooks/useTodos";
+import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Trash2, Edit2, Calendar, Flag } from "lucide-react";
@@ -35,14 +36,26 @@ export function TodoItem({
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [openDialog, setOpenDialog] = useState(false); // for dialog
+  const [pendingCompleted, setPendingCompleted] = useState<boolean | null>(
+    null,
+  );
 
-  // Toggle complete
-  const handleToggleComplete = async () => {
-    await updateTodo.mutateAsync({
-      id: todo.id,
-      input: { completed: !todo.completed },
-    });
-    onToggleComplete?.();
+  const handleToggleComplete = () => {
+    const next =
+      pendingCompleted !== null ? !pendingCompleted : !todo.completed;
+    setPendingCompleted(next);
+    updateTodo.mutate(
+      { id: todo.id, input: { completed: next } },
+      {
+        onSuccess: () => {
+          setPendingCompleted(null);
+          onToggleComplete?.();
+        },
+        onError: () => {
+          setPendingCompleted(null);
+        },
+      },
+    );
   };
 
   // Delete todo
@@ -81,14 +94,16 @@ export function TodoItem({
   const dateInfo = todo.due_date ? formatDate(todo.due_date) : null;
   const isOverdue = dateInfo?.isOverdue || false;
   const priority = priorityColorsConfig[todo.priority];
+  const displayCompleted =
+    pendingCompleted !== null ? pendingCompleted : todo.completed;
 
   return (
     <Card
       className={cn(
         "group transition-all duration-200 py-1",
-        todo.completed && "opacity-60",
+        displayCompleted && "opacity-60",
         isOverdue &&
-          !todo.completed &&
+          !displayCompleted &&
           "border-destructive/50 bg-destructive/5",
       )}
     >
@@ -97,8 +112,8 @@ export function TodoItem({
           {/* Checkbox */}
           <div className="mt-0.5">
             <DopamineCheckbox
-              checked={todo.completed}
-              onToggle={() => handleToggleComplete()}
+              checked={displayCompleted}
+              onToggle={handleToggleComplete}
             />
           </div>
 
@@ -110,7 +125,7 @@ export function TodoItem({
                   <h3
                     className={cn(
                       "font-semibold text-base transition-colors",
-                      todo.completed
+                      displayCompleted
                         ? "line-through text-muted-foreground"
                         : "text-foreground",
                     )}
@@ -121,7 +136,7 @@ export function TodoItem({
                     <p
                       className={cn(
                         "text-sm mt-1 text-muted-foreground line-clamp-2",
-                        todo.completed && "line-through",
+                        displayCompleted && "line-through",
                       )}
                     >
                       {todo.description}
@@ -162,7 +177,7 @@ export function TodoItem({
               <div className="flex items-center gap-1 opacity-100">
                 <RippleButton
                   onClick={() => onEdit(todo)}
-                  disabled={todo.completed}
+                  disabled={displayCompleted}
                   className="h-8 w-8 cursor-pointer p-1.5"
                   title="Edit todo"
                 >

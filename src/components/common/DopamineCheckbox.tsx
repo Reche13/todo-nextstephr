@@ -9,24 +9,19 @@ type Props = {
 };
 
 export default function DopamineCheckbox({ checked, onToggle }: Props) {
-  const handleToggle = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (checked) {
-      onToggle();
-    } else {
-      try {
-        const rect = event.currentTarget.getBoundingClientRect();
-        const x = rect.left + rect.width / 2;
-        const y = rect.top + rect.height / 2;
-        await confetti({
-          origin: {
-            x: x / window.innerWidth,
-            y: y / window.innerHeight,
-          },
-        });
-        onToggle();
-      } catch (error) {
-        console.error("Confetti button error:", error);
-      }
+  const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
+    // Always update immediately for instant feedback; confetti runs in background when checking
+    onToggle();
+    if (!checked) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      confetti({
+        origin: {
+          x: x / window.innerWidth,
+          y: y / window.innerHeight,
+        },
+      });
     }
   };
 

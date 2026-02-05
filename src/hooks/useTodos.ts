@@ -66,7 +66,20 @@ export function useUpdateTodo() {
       if (error) throw error;
       return data as Todo;
     },
-    onSuccess: () => {
+    onMutate: async ({ id, input }) => {
+      await queryClient.cancelQueries({ queryKey: ["todos"] });
+      const previousTodos = queryClient.getQueryData<Todo[]>(["todos"]);
+      queryClient.setQueryData<Todo[]>(["todos"], (old) =>
+        old?.map((t) => (t.id === id ? { ...t, ...input } : t)) ?? old,
+      );
+      return { previousTodos };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousTodos != null) {
+        queryClient.setQueryData(["todos"], context.previousTodos);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["todos"] });
     },
   });
