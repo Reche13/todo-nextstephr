@@ -15,6 +15,7 @@ import { useDashboardFilters } from "../hooks/useDashboardFilters";
 
 import type { EmptyStateType, FilterType, SortType, Todo } from "@/types";
 import { useMemo, useState } from "react";
+import { GridPattern } from "@/components/ui/grid-pattern";
 
 const Dashboard = () => {
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
@@ -68,8 +69,16 @@ const Dashboard = () => {
       <DashboardHeader onOpenAIBreakdown={() => setShowAIBreakdown(true)} />
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-hidden">
-        <div className="container mx-auto px-4 py-6 max-w-7xl h-full">
+      <div className="flex-1 overflow-hidden relative">
+        <GridPattern
+          width={20}
+          height={20}
+          x={-1}
+          y={-1}
+          strokeDasharray={"4 2"}
+          className="opacity-30"
+        />
+        <div className="relative z-30 container mx-auto px-4 py-6 max-w-7xl h-full">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
             <DashboardSidebar />
 

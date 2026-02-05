@@ -40,7 +40,7 @@ const LoginForm = () => {
   };
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md relative z-30">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-semibold">Welcome back</CardTitle>
         <CardDescription>Sign in to your account to continue</CardDescription>
