@@ -1,7 +1,15 @@
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Sparkles, Loader2, X, Edit2, Calendar, Flag, Check } from "lucide-react";
+import {
+  Sparkles,
+  Loader2,
+  X,
+  Edit2,
+  Calendar,
+  Flag,
+  Check,
+} from "lucide-react";
 
 import { useAICreateTodo } from "@/hooks/useAITodos";
 import { useCreateTodo } from "@/hooks/useTodos";
@@ -19,6 +27,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { todoSchema, type TodoFormData } from "@/schemas/createTodoSchema";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
+import { RainbowButton } from "../ui/rainbow-button";
 
 interface AICreateTodoFormProps {
   onSuccess?: () => void;
@@ -50,8 +59,7 @@ const formatDate = (dateString: string | undefined) => {
   const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 
   if (diffDays < 0) return { text: "Overdue", isOverdue: true };
-  if (diffDays === 0)
-    return { text: "Today", isOverdue: false, isToday: true };
+  if (diffDays === 0) return { text: "Today", isOverdue: false, isToday: true };
   if (diffDays === 1) return { text: "Tomorrow", isOverdue: false };
   if (diffDays <= 7) return { text: `In ${diffDays} days`, isOverdue: false };
 
@@ -339,11 +347,7 @@ export function AICreateTodoForm({ onSuccess }: AICreateTodoFormProps) {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="ai-due_date">Due Date</Label>
-                <Input
-                  id="ai-due_date"
-                  type="date"
-                  {...register("due_date")}
-                />
+                <Input id="ai-due_date" type="date" {...register("due_date")} />
               </div>
             </div>
             <div className="flex gap-2">
@@ -443,14 +447,14 @@ export function AICreateTodoForm({ onSuccess }: AICreateTodoFormProps) {
   }
 
   return (
-    <Button
+    <RainbowButton
       type="button"
       onClick={() => setShowPromptInput(true)}
-      className="w-full cursor-pointer bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-lg border-0"
       size="lg"
+      className="flex items-center gap-3 w-full"
     >
       <Sparkles className="h-5 w-5 mr-2" />
       Create with AI
-    </Button>
+    </RainbowButton>
   );
 }
