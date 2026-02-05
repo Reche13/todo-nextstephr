@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { priorityColorsConfig } from "@/lib/colors";
 import DopamineCheckbox from "@/components/common/DopamineCheckbox";
+import { RippleButton } from "../ui/ripple-button";
 
 interface TodoItemProps {
   todo: Todo;
@@ -95,19 +96,13 @@ export function TodoItem({
         <div className="flex items-start gap-3">
           {/* Checkbox */}
           <div className="mt-0.5">
-            {/* <Checkbox
-              checked={todo.completed}
-              onCheckedChange={() => handleToggleComplete()}
-              className="h-5 w-5 cursor-pointer"
-            /> */}
-
             <DopamineCheckbox
               checked={todo.completed}
               onToggle={() => handleToggleComplete()}
             />
           </div>
 
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 -mt-1">
             <div className="flex items-start justify-between gap-3">
               {/* Todo title + description */}
               <div className="flex-1 space-y-2">
@@ -165,29 +160,25 @@ export function TodoItem({
 
               {/* Actions */}
               <div className="flex items-center gap-1 opacity-100">
-                <Button
-                  variant="ghost"
-                  size="icon"
+                <RippleButton
                   onClick={() => onEdit(todo)}
                   disabled={todo.completed}
-                  className="h-8 w-8 cursor-pointer"
+                  className="h-8 w-8 cursor-pointer p-1.5"
                   title="Edit todo"
                 >
                   <Edit2 className="h-4 w-4" />
-                </Button>
+                </RippleButton>
 
                 {/* Delete with ShadCN Dialog */}
                 <Dialog open={openDialog} onOpenChange={setOpenDialog}>
                   <DialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
+                    <RippleButton
+                      className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer p-1.5"
                       title="Delete todo"
                       disabled={isDeleting || deleteTodo.isPending}
                     >
                       <Trash2 className="h-4 w-4" />
-                    </Button>
+                    </RippleButton>
                   </DialogTrigger>
 
                   <DialogContent className="sm:max-w-[400px]">
