@@ -9,6 +9,7 @@ import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
 import { DashboardTodoList } from "@/components/dashboard/DashboardTodoList";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
+import { AIBreakdownModal } from "@/components/dashboard/AIBreakdownModal";
 
 import { useDashboardFilters } from "../hooks/useDashboardFilters";
 
@@ -20,6 +21,7 @@ const Dashboard = () => {
   const [filter, setFilter] = useState<FilterType>("all");
   const [sort, setSort] = useState<SortType>("newest");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showAIBreakdown, setShowAIBreakdown] = useState(false);
 
   const clearFilters = () => {
     setSearchQuery("");
@@ -63,7 +65,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-zinc-50 flex flex-col">
-      <DashboardHeader />
+      <DashboardHeader onOpenAIBreakdown={() => setShowAIBreakdown(true)} />
 
       {/* Main Content Area */}
       <div className="flex-1 overflow-hidden">
@@ -108,6 +110,14 @@ const Dashboard = () => {
           onSuccess={() => toast.success("Todo updated successfully!")}
         />
       )}
+
+      <AIBreakdownModal
+        open={showAIBreakdown}
+        onOpenChange={setShowAIBreakdown}
+        onSuccess={() => {
+          setShowAIBreakdown(false);
+        }}
+      />
     </div>
   );
 };

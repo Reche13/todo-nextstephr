@@ -2,9 +2,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, Sparkles } from "lucide-react";
 
-export function DashboardHeader() {
+interface DashboardHeaderProps {
+  onOpenAIBreakdown?: () => void;
+}
+
+export function DashboardHeader({ onOpenAIBreakdown }: DashboardHeaderProps) {
   const { user, signOut } = useAuth();
 
   const handleSignOut = async () => {
@@ -26,6 +30,16 @@ export function DashboardHeader() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            {onOpenAIBreakdown && (
+              <Button
+                variant="default"
+                onClick={onOpenAIBreakdown}
+                className="w-fit cursor-pointer bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-lg border-0"
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                Plan with AI
+              </Button>
+            )}
             <Button
               variant="outline"
               onClick={handleSignOut}
