@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { LogOut, Sparkles } from "lucide-react";
 import { RainbowButton } from "../ui/rainbow-button";
+import { SparklesText } from "../ui/sparkles-text";
 
 interface DashboardHeaderProps {
   onOpenAIBreakdown?: () => void;
@@ -22,9 +23,10 @@ export function DashboardHeader({ onOpenAIBreakdown }: DashboardHeaderProps) {
       <div className="container mx-auto px-4 py-4 max-w-7xl">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-xl md:text-2xl font-bold mb-1 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            <SparklesText sparklesCount={5} className="text-xl md:text-2xl">
               NextStepHR Todos
-            </h1>
+            </SparklesText>
+
             <p className="text-muted-foreground text-sm md:text-base">
               Welcome back,{" "}
               <span className="font-medium">{user?.user_metadata?.name}</span>
