@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { Todo } from "@/types";
 import { useUpdateTodo, useDeleteTodo } from "@/hooks/useTodos";
-import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Trash2, Edit2, Calendar, Flag } from "lucide-react";
