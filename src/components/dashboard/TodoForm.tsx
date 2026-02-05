@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { todoSchema, type TodoFormData } from "@/schemas/createTodoSchema";
 import { AICreateTodoForm } from "@/components/dashboard/AICreateTodoForm";
 
@@ -109,13 +109,13 @@ export function TodoForm({ onSuccess }: TodoFormProps) {
           >
             {createTodo.isPending ? (
               <>
-                <span className="animate-spin mr-2">⏳</span>
-                Adding...
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Saving...
               </>
             ) : (
               <>
                 <Plus className="h-4 w-4 mr-2" />
-                Add Todo
+                Save Todo
               </>
             )}
           </Button>

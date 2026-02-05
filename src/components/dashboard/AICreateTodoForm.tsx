@@ -27,29 +27,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { todoSchema, type TodoFormData } from "@/schemas/createTodoSchema";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
-import { RainbowButton } from "../ui/rainbow-button";
+import { RainbowButton } from "@/components/ui/rainbow-button";
+import { MagicCard } from "@/components/ui/magic-card";
+import { RippleButton } from "@/components/ui/ripple-button";
+import { priorityColorsConfig } from "@/lib/colors";
 
 interface AICreateTodoFormProps {
   onSuccess?: () => void;
 }
-
-const priorityConfig = {
-  low: {
-    color:
-      "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800",
-    icon: "text-blue-600 dark:text-blue-400",
-  },
-  medium: {
-    color:
-      "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800",
-    icon: "text-yellow-600 dark:text-yellow-400",
-  },
-  high: {
-    color:
-      "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800",
-    icon: "text-red-600 dark:text-red-400",
-  },
-};
 
 const formatDate = (dateString: string | undefined) => {
   if (!dateString) return null;
@@ -122,7 +107,6 @@ export function AICreateTodoForm({ onSuccess }: AICreateTodoFormProps) {
       setShowPromptInput(false);
       setShowPreview(true);
       setIsEditing(false);
-      toast.success("Todo generated successfully!");
     } catch (error) {
       console.error("Failed to generate todo:", error);
       toast.error(
@@ -145,7 +129,6 @@ export function AICreateTodoForm({ onSuccess }: AICreateTodoFormProps) {
       setGeneratedData(null);
       setIsEditing(false);
       onSuccess?.();
-      toast.success("Todo created successfully!");
     } catch (error) {
       console.error("Failed to create todo:", error);
       toast.error("Failed to create todo. Please try again.");
@@ -174,7 +157,6 @@ export function AICreateTodoForm({ onSuccess }: AICreateTodoFormProps) {
       setGeneratedData(null);
       setIsEditing(false);
       onSuccess?.();
-      toast.success("Todo created successfully!");
     } catch (error) {
       console.error("Failed to create todo:", error);
       toast.error("Failed to create todo. Please try again.");
@@ -183,176 +165,74 @@ export function AICreateTodoForm({ onSuccess }: AICreateTodoFormProps) {
 
   if (showPreview && !isEditing) {
     const displayData = generatedData || formData;
-    const priority = priorityConfig[displayData.priority];
+    const priority = priorityColorsConfig[displayData.priority];
     const dateInfo = displayData.due_date
       ? formatDate(displayData.due_date)
       : null;
 
     return (
-      <Card className="shadow-lg border-primary/30 bg-gradient-to-br from-primary/5 to-primary/10">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Sparkles className="h-5 w-5 text-primary" />
-              AI-Generated Todo
-            </CardTitle>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-xs"
-              onClick={() => setIsEditing(true)}
-              className="cursor-pointer"
-            >
-              <Edit2 className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-3">
-            <div>
-              <h3 className="font-semibold text-lg text-foreground mb-1">
-                {displayData.title}
-              </h3>
-              {displayData.description && (
-                <p className="text-sm text-muted-foreground">
-                  {displayData.description}
-                </p>
-              )}
-            </div>
-
-            <div className="flex items-center gap-3 flex-wrap">
-              <span
-                className={cn(
-                  "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border",
-                  priority.color,
-                )}
+      <Card className="shadow-none border-none p-0">
+        <MagicCard gradientColor="#D9D9D955" className="py-7">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Sparkles className="h-5 w-5 text-primary" />
+                AI-Generated Todo
+              </CardTitle>
+              <RippleButton
+                type="button"
+                onClick={() => setIsEditing(true)}
+                className="cursor-pointer w-fit p-1.5"
               >
-                <Flag className={cn("h-3 w-3", priority.icon)} />
-                <span className="capitalize">{displayData.priority}</span>
-              </span>
-              {dateInfo && (
+                <Edit2 className="h-4 w-4" />
+              </RippleButton>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-3">
+              <div>
+                <h3 className="font-semibold text-lg text-foreground mb-1">
+                  {displayData.title}
+                </h3>
+                {displayData.description && (
+                  <p className="text-sm text-muted-foreground">
+                    {displayData.description}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex items-center gap-3 flex-wrap">
                 <span
                   className={cn(
-                    "inline-flex items-center gap-1.5 text-xs",
-                    dateInfo.isOverdue
-                      ? "text-destructive font-medium"
-                      : dateInfo.isToday
-                        ? "text-orange-600 dark:text-orange-400 font-medium"
-                        : "text-muted-foreground",
+                    "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border",
+                    priority.color,
                   )}
                 >
-                  <Calendar className="h-3.5 w-3.5" />
-                  {dateInfo.text}
+                  <Flag className={cn("h-3 w-3", priority.icon)} />
+                  <span className="capitalize">{displayData.priority}</span>
                 </span>
-              )}
-            </div>
-          </div>
-
-          <div className="flex gap-2 pt-2">
-            <Button
-              type="button"
-              onClick={handleSaveDirectly}
-              disabled={createTodo.isPending}
-              className="flex-1 cursor-pointer"
-            >
-              {createTodo.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Check className="h-4 w-4 mr-2" />
-                  Save Todo
-                </>
-              )}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsEditing(true)}
-              disabled={createTodo.isPending}
-              className="cursor-pointer"
-            >
-              <Edit2 className="h-4 w-4 mr-2" />
-              Edit
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCancel}
-              disabled={createTodo.isPending}
-              className="cursor-pointer"
-            >
-              Cancel
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (showPreview && isEditing) {
-    return (
-      <Card className="shadow-sm border-primary/20">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            Edit AI-Generated Todo
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="ai-title">Title *</Label>
-              <Input
-                id="ai-title"
-                placeholder="What needs to be done?"
-                {...register("title")}
-                className="transition-all focus:ring-2"
-              />
-              {errors.title && (
-                <p className="text-sm text-destructive animate-in fade-in">
-                  {errors.title.message}
-                </p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="ai-description">Description</Label>
-              <Input
-                id="ai-description"
-                placeholder="Add details (optional)..."
-                {...register("description")}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="ai-priority">Priority</Label>
-                <Controller
-                  name="priority"
-                  control={control}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="cursor-pointer">
-                        <SelectValue placeholder="Select priority" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="ai-due_date">Due Date</Label>
-                <Input id="ai-due_date" type="date" {...register("due_date")} />
+                {dateInfo && (
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-1.5 text-xs",
+                      dateInfo.isOverdue
+                        ? "text-destructive font-medium"
+                        : dateInfo.isToday
+                          ? "text-orange-600 dark:text-orange-400 font-medium"
+                          : "text-muted-foreground",
+                    )}
+                  >
+                    <Calendar className="h-3.5 w-3.5" />
+                    {dateInfo.text}
+                  </span>
+                )}
               </div>
             </div>
-            <div className="flex gap-2">
+
+            <div className="flex gap-2 pt-2">
               <Button
-                type="submit"
+                type="button"
+                onClick={handleSaveDirectly}
                 disabled={createTodo.isPending}
                 className="flex-1 cursor-pointer"
               >
@@ -362,86 +242,202 @@ export function AICreateTodoForm({ onSuccess }: AICreateTodoFormProps) {
                     Saving...
                   </>
                 ) : (
-                  "Save Todo"
+                  <>
+                    <Check className="h-4 w-4 mr-2" />
+                    Save Todo
+                  </>
                 )}
               </Button>
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setIsEditing(false)}
+                onClick={() => setIsEditing(true)}
+                disabled={createTodo.isPending}
+                className="cursor-pointer"
+              >
+                Edit
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancel}
                 disabled={createTodo.isPending}
                 className="cursor-pointer"
               >
                 Cancel
               </Button>
             </div>
-          </form>
-        </CardContent>
+          </CardContent>
+        </MagicCard>
+      </Card>
+    );
+  }
+
+  if (showPreview && isEditing) {
+    return (
+      <Card className="shadow-none border-none p-0">
+        <MagicCard gradientColor="#D9D9D955" className="py-7">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              Edit AI-Generated Todo
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <Label htmlFor="ai-title">Title *</Label>
+                <Input
+                  id="ai-title"
+                  placeholder="What needs to be done?"
+                  {...register("title")}
+                  className="transition-all focus:ring-2"
+                />
+                {errors.title && (
+                  <p className="text-sm text-destructive animate-in fade-in">
+                    {errors.title.message}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="ai-description">Description</Label>
+                <Input
+                  id="ai-description"
+                  placeholder="Add details (optional)..."
+                  {...register("description")}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="ai-priority">Priority</Label>
+                  <Controller
+                    name="priority"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="cursor-pointer">
+                          <SelectValue placeholder="Select priority" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="low">Low</SelectItem>
+                          <SelectItem value="medium">Medium</SelectItem>
+                          <SelectItem value="high">High</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ai-due_date">Due Date</Label>
+                  <Input
+                    id="ai-due_date"
+                    type="date"
+                    {...register("due_date")}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  type="submit"
+                  disabled={createTodo.isPending}
+                  className="flex-1 cursor-pointer"
+                >
+                  {createTodo.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Todo"
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsEditing(false)}
+                  disabled={createTodo.isPending}
+                  className="cursor-pointer"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </MagicCard>
       </Card>
     );
   }
 
   if (showPromptInput) {
     return (
-      <Card className="shadow-sm border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            Create with AI
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="ai-prompt">Describe your task</Label>
-              <Input
-                id="ai-prompt"
-                placeholder="e.g., prepare for exams"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleGenerate();
-                  }
-                }}
-                className="transition-all focus:ring-2"
-              />
+      <Card className="p-0 shadow-none border-none">
+        <MagicCard gradientColor="#D9D9D955" className="py-7">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              Create with AI
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4 mt-">
+              <div className="space-y-2">
+                <Label
+                  htmlFor="ai-prompt"
+                  className="text-muted-foreground font-medium"
+                >
+                  Describe your task
+                </Label>
+                <Input
+                  id="ai-prompt"
+                  placeholder="e.g., prepare for exams"
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleGenerate();
+                    }
+                  }}
+                  className="transition-all focus:ring-2"
+                />
+              </div>
+              <div className="flex gap-2">
+                <RainbowButton
+                  type="button"
+                  onClick={handleGenerate}
+                  disabled={aiCreateTodo.isPending || !prompt.trim()}
+                  className="flex-1 cursor-pointer rounded-md"
+                >
+                  {aiCreateTodo.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Generate
+                    </>
+                  )}
+                </RainbowButton>
+                <RippleButton
+                  type="button"
+                  onClick={() => {
+                    setShowPromptInput(false);
+                    setPrompt("");
+                  }}
+                  disabled={aiCreateTodo.isPending}
+                  className="cursor-pointer"
+                >
+                  <X className="h-4 w-4" />
+                </RippleButton>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                onClick={handleGenerate}
-                disabled={aiCreateTodo.isPending || !prompt.trim()}
-                className="flex-1 cursor-pointer"
-              >
-                {aiCreateTodo.isPending ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    Generate
-                  </>
-                )}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setShowPromptInput(false);
-                  setPrompt("");
-                }}
-                disabled={aiCreateTodo.isPending}
-                className="cursor-pointer"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </CardContent>
+          </CardContent>
+        </MagicCard>
       </Card>
     );
   }
