@@ -1,32 +1,138 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
+import "@supabase/functions-js/edge-runtime.d.ts";
 
-// Setup type definitions for built-in Supabase Runtime APIs
-import "@supabase/functions-js/edge-runtime.d.ts"
-
-console.log("Hello from Functions!")
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
 
 Deno.serve(async (req) => {
-  const { name } = await req.json()
-  const data = {
-    message: `Hello ${name}!`,
+  try {
+    const { prompt } = await req.json();
+
+    if (!prompt || typeof prompt !== "string") {
+      return new Response(JSON.stringify({ error: "prompt is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (prompt.length > 800) {
+      return new Response(JSON.stringify({ error: "prompt too long" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const now = new Date();
+
+    const systemPrompt = `
+You are a task planner that breaks down a user goal into small actionable todo items.
+
+Current date: ${now.toISOString()}
+
+Your job:
+- Read the user's input.
+- Identify distinct actions that must be done.
+- Split them into clear, practical todos.
+
+Each todo must:
+- Represent ONE action.
+- Be something a human can actually do.
+- Not be vague.
+- Not be micro-steps.
+
+Output format:
+An array of JSON objects with this structure:
+- title: Short, action-oriented task (start with a verb, max 100 chars)
+- description: A clear explanation of what needs to be done (max 500 chars)
+- priority: "low", "medium", or "high"
+- due_date: ISO 8601 UTC string or null
+
+Rules:
+- Do NOT include markdown.
+- Do NOT wrap in \`\`\`json.
+- Do NOT explain anything.
+- Return ONLY the JSON array.
+- Minimum 1 item, maximum 5 items.
+
+Priority rules:
+- "high" if the task involves deadlines, risk, or urgency.
+- "low" if it is optional or casual.
+- otherwise "medium".
+
+Date rules:
+- If the user mentions any date, apply it logically to relevant tasks.
+- If no date is mentioned, use null.
+
+Rewrite vague ideas into real tasks.
+Improve grammar and clarity.
+
+Input:
+"${prompt}"
+`;
+
+    const res = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemma-3-4b-it:generateContent",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": GEMINI_API_KEY,
+        },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: systemPrompt }] }],
+          generationConfig: {
+            temperature: 0,
+            maxOutputTokens: 700,
+          },
+        }),
+      },
+    );
+
+    if (!res.ok) {
+      const errText = await res.text();
+      return new Response(
+        JSON.stringify({ error: "AI request failed", raw: errText }),
+        { status: 500, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    const data = await res.json();
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!text) {
+      return new Response(JSON.stringify({ error: "No AI output" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const cleaned = text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    let parsed;
+    try {
+      parsed = JSON.parse(cleaned);
+    } catch {
+      return new Response(
+        JSON.stringify({ error: "AI returned invalid JSON", raw: cleaned }),
+        { status: 500, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    if (!Array.isArray(parsed)) {
+      return new Response(
+        JSON.stringify({ error: "AI did not return an array", raw: parsed }),
+        { status: 500, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    return new Response(JSON.stringify(parsed), {
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: String(err) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
-
-  return new Response(
-    JSON.stringify(data),
-    { headers: { "Content-Type": "application/json" } },
-  )
-})
-
-/* To invoke locally:
-
-  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
-  2. Make an HTTP request:
-
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/ai-todo-breakdown' \
-    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
-
-*/
+});
