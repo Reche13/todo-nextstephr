@@ -174,6 +174,18 @@ function TodoEditForm({
   onCancel: () => void;
   onUpdate: (field: keyof EditableTodo, value: string) => void;
 }) {
+  const [showTitleError, setShowTitleError] = useState(false);
+
+  const handleDone = () => {
+    if (!todo.title.trim()) {
+      toast.error("Title cannot be empty");
+      setShowTitleError(true);
+      return;
+    }
+    setShowTitleError(false);
+    onSave();
+  };
+
   return (
     <Card className="p-0 shadow-none border-none">
       <MagicCard gradientColor="#D9D9D955" className="p-0">
@@ -182,10 +194,16 @@ function TodoEditForm({
             <Label className="text-xs font-medium">Title</Label>
             <Input
               value={todo.title}
-              onChange={(e) => onUpdate("title", e.target.value)}
+              onChange={(e) => {
+                onUpdate("title", e.target.value);
+                if (showTitleError) setShowTitleError(false);
+              }}
               placeholder="Task title"
-              className="font-medium"
+              className={cn("font-medium", showTitleError && "border-destructive")}
             />
+            {showTitleError && (
+              <p className="text-xs text-destructive">Title is required</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -227,7 +245,7 @@ function TodoEditForm({
           <div className="flex gap-2 pt-2">
             <Button
               type="button"
-              onClick={onSave}
+              onClick={handleDone}
               size="sm"
               className="flex-1 cursor-pointer"
             >
