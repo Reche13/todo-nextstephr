@@ -1,7 +1,14 @@
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Sparkles, Loader2, Trash2, Plus, Edit2, Calendar, Flag, Check } from "lucide-react";
+import {
+  Sparkles,
+  Loader2,
+  Trash2,
+  Plus,
+  Edit2,
+  Calendar,
+  Flag,
+  Check,
+} from "lucide-react";
 
 import { useAIBreakdownTodo } from "@/hooks/useAITodos";
 import { useCreateTodo } from "@/hooks/useTodos";
@@ -24,10 +31,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
-import { todoSchema, type TodoFormData } from "@/schemas/createTodoSchema";
+import { type TodoFormData } from "@/schemas/createTodoSchema";
 import toast from "react-hot-toast";
 import type { CreateTodoInput } from "@/types";
 import { cn } from "@/lib/utils";
+import { priorityColorsConfig } from "@/lib/colors";
+import { MagicCard } from "../ui/magic-card";
+import { RainbowButton } from "../ui/rainbow-button";
+import { RippleButton } from "../ui/ripple-button";
+import Checkbox from "../common/Check";
 
 interface AIBreakdownModalProps {
   open: boolean;
@@ -40,24 +52,6 @@ interface EditableTodo extends TodoFormData {
   isEditing?: boolean;
 }
 
-const priorityConfig = {
-  low: {
-    color:
-      "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800",
-    icon: "text-blue-600 dark:text-blue-400",
-  },
-  medium: {
-    color:
-      "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800",
-    icon: "text-yellow-600 dark:text-yellow-400",
-  },
-  high: {
-    color:
-      "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800",
-    icon: "text-red-600 dark:text-red-400",
-  },
-};
-
 const formatDate = (dateString: string | undefined) => {
   if (!dateString) return null;
   const date = new Date(dateString);
@@ -66,8 +60,7 @@ const formatDate = (dateString: string | undefined) => {
   const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 
   if (diffDays < 0) return { text: "Overdue", isOverdue: true };
-  if (diffDays === 0)
-    return { text: "Today", isOverdue: false, isToday: true };
+  if (diffDays === 0) return { text: "Today", isOverdue: false, isToday: true };
   if (diffDays === 1) return { text: "Tomorrow", isOverdue: false };
   if (diffDays <= 7) return { text: `In ${diffDays} days`, isOverdue: false };
 
@@ -94,92 +87,78 @@ function TodoPreviewCard({
   onEdit: () => void;
   onDelete: () => void;
 }) {
-  const priority = priorityConfig[todo.priority];
+  const priority = priorityColorsConfig[todo.priority];
   const dateInfo = todo.due_date ? formatDate(todo.due_date) : null;
 
   return (
-    <Card
-      className={cn(
-        "transition-all",
-        isSelected
-          ? "border-primary/50 bg-primary/5 shadow-md"
-          : "border-muted",
-      )}
-    >
-      <CardContent className="p-4">
-        <div className="flex items-start gap-3">
-          <input
-            type="checkbox"
-            checked={isSelected}
-            onChange={onToggleSelect}
-            className="mt-1 h-4 w-4 cursor-pointer"
-          />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex-1 space-y-2">
-                <div>
-                  <h3 className="font-semibold text-base text-foreground">
-                    {todo.title}
-                  </h3>
-                  {todo.description && (
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {todo.description}
-                    </p>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-3 flex-wrap">
-                  <span
-                    className={cn(
-                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border",
-                      priority.color,
+    <Card className="p-0 shadow-none border-none">
+      <MagicCard gradientColor="#D9D9D955" className="p-0">
+        <CardContent className="py-6">
+          <div className="flex items-start gap-3">
+            <Checkbox isSelected={isSelected} onToggleSelect={onToggleSelect} />
+            <div className="flex-1 min-w-0 -mt-1">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 space-y-2">
+                  <div>
+                    <h3 className="font-semibold text-base text-foreground">
+                      {todo.title}
+                    </h3>
+                    {todo.description && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {todo.description}
+                      </p>
                     )}
-                  >
-                    <Flag className={cn("h-3 w-3", priority.icon)} />
-                    <span className="capitalize">{todo.priority}</span>
-                  </span>
-                  {dateInfo && (
+                  </div>
+
+                  <div className="flex items-center gap-3 flex-wrap">
                     <span
                       className={cn(
-                        "inline-flex items-center gap-1.5 text-xs",
-                        dateInfo.isOverdue
-                          ? "text-destructive font-medium"
-                          : dateInfo.isToday
-                            ? "text-orange-600 dark:text-orange-400 font-medium"
-                            : "text-muted-foreground",
+                        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border",
+                        priority.color,
                       )}
                     >
-                      <Calendar className="h-3.5 w-3.5" />
-                      {dateInfo.text}
+                      <Flag className={cn("h-3 w-3", priority.icon)} />
+                      <span className="capitalize">{todo.priority}</span>
                     </span>
-                  )}
+                    {dateInfo && (
+                      <span
+                        className={cn(
+                          "inline-flex items-center gap-1.5 text-xs",
+                          dateInfo.isOverdue
+                            ? "text-destructive font-medium"
+                            : dateInfo.isToday
+                              ? "text-orange-600 dark:text-orange-400 font-medium"
+                              : "text-muted-foreground",
+                        )}
+                      >
+                        <Calendar className="h-3.5 w-3.5" />
+                        {dateInfo.text}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex items-center gap-1">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  onClick={onEdit}
-                  className="cursor-pointer"
-                >
-                  <Edit2 className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  onClick={onDelete}
-                  className="cursor-pointer text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center gap-1">
+                  <RippleButton
+                    type="button"
+                    onClick={onEdit}
+                    className="cursor-pointer p-1.5"
+                  >
+                    <Edit2 className="h-4 w-4" />
+                  </RippleButton>
+                  <RippleButton
+                    type="button"
+                    onClick={onDelete}
+                    className="p-1.5 cursor-pointer text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </RippleButton>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </CardContent>
+        </CardContent>
+      </MagicCard>
     </Card>
   );
 }
@@ -196,75 +175,77 @@ function TodoEditForm({
   onUpdate: (field: keyof EditableTodo, value: string) => void;
 }) {
   return (
-    <Card className="border-primary/30 bg-primary/5">
-      <CardContent className="p-4 space-y-3">
-        <div className="space-y-2">
-          <Label className="text-xs font-medium">Title</Label>
-          <Input
-            value={todo.title}
-            onChange={(e) => onUpdate("title", e.target.value)}
-            placeholder="Task title"
-            className="font-medium"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label className="text-xs font-medium">Description</Label>
-          <Input
-            value={todo.description}
-            onChange={(e) => onUpdate("description", e.target.value)}
-            placeholder="Task description"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
+    <Card className="p-0 shadow-none border-none">
+      <MagicCard gradientColor="#D9D9D955" className="p-0">
+        <CardContent className="p-4 space-y-3">
           <div className="space-y-2">
-            <Label className="text-xs font-medium">Priority</Label>
-            <Select
-              value={todo.priority}
-              onValueChange={(value) => onUpdate("priority", value)}
-            >
-              <SelectTrigger className="cursor-pointer">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="low">Low</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label className="text-xs font-medium">Due Date</Label>
+            <Label className="text-xs font-medium">Title</Label>
             <Input
-              type="date"
-              value={todo.due_date || ""}
-              onChange={(e) => onUpdate("due_date", e.target.value)}
+              value={todo.title}
+              onChange={(e) => onUpdate("title", e.target.value)}
+              placeholder="Task title"
+              className="font-medium"
             />
           </div>
-        </div>
 
-        <div className="flex gap-2 pt-2">
-          <Button
-            type="button"
-            onClick={onSave}
-            size="sm"
-            className="flex-1 cursor-pointer"
-          >
-            <Check className="h-3 w-3 mr-2" />
-            Done
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            size="sm"
-            className="cursor-pointer"
-          >
-            Cancel
-          </Button>
-        </div>
-      </CardContent>
+          <div className="space-y-2">
+            <Label className="text-xs font-medium">Description</Label>
+            <Input
+              value={todo.description}
+              onChange={(e) => onUpdate("description", e.target.value)}
+              placeholder="Task description"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label className="text-xs font-medium">Priority</Label>
+              <Select
+                value={todo.priority}
+                onValueChange={(value) => onUpdate("priority", value)}
+              >
+                <SelectTrigger className="cursor-pointer">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs font-medium">Due Date</Label>
+              <Input
+                type="date"
+                value={todo.due_date || ""}
+                onChange={(e) => onUpdate("due_date", e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-2 pt-2">
+            <Button
+              type="button"
+              onClick={onSave}
+              size="sm"
+              className="flex-1 cursor-pointer"
+            >
+              <Check className="h-3 w-3 mr-2" />
+              Done
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              size="sm"
+              className="cursor-pointer"
+            >
+              Cancel
+            </Button>
+          </div>
+        </CardContent>
+      </MagicCard>
     </Card>
   );
 }
@@ -299,9 +280,7 @@ export function AIBreakdownModal({
         title: result.title,
         description: result.description || "",
         priority: result.priority,
-        due_date: result.due_date
-          ? result.due_date.split("T")[0]
-          : undefined,
+        due_date: result.due_date ? result.due_date.split("T")[0] : undefined,
         isEditing: false,
       }));
       setGeneratedTodos(todos);
@@ -382,9 +361,7 @@ export function AIBreakdownModal({
     value: string,
   ) => {
     setGeneratedTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id ? { ...todo, [field]: value } : todo,
-      ),
+      prev.map((todo) => (todo.id === id ? { ...todo, [field]: value } : todo)),
     );
   };
 
@@ -439,11 +416,11 @@ export function AIBreakdownModal({
                   </span>
                 </div>
               </div>
-              <Button
+              <RainbowButton
                 type="button"
                 onClick={handleGenerate}
                 disabled={aiBreakdownTodo.isPending || !prompt.trim()}
-                className="w-full cursor-pointer"
+                className="w-full cursor-pointer rounded-md"
               >
                 {aiBreakdownTodo.isPending ? (
                   <>
@@ -456,7 +433,7 @@ export function AIBreakdownModal({
                     Generate Tasks
                   </>
                 )}
-              </Button>
+              </RainbowButton>
             </div>
           ) : (
             <div className="space-y-4">
@@ -521,9 +498,7 @@ export function AIBreakdownModal({
               <Button
                 type="button"
                 onClick={handleSave}
-                disabled={
-                  createTodo.isPending || selectedTodos.size === 0
-                }
+                disabled={createTodo.isPending || selectedTodos.size === 0}
                 className="cursor-pointer"
               >
                 {createTodo.isPending ? (
@@ -544,7 +519,7 @@ export function AIBreakdownModal({
               type="button"
               variant="outline"
               onClick={handleClose}
-              className="cursor-pointer"
+              className="cursor-pointer w-full"
             >
               Close
             </Button>

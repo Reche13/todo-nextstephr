@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
 import { LogOut, Sparkles } from "lucide-react";
+import { RainbowButton } from "../ui/rainbow-button";
 
 interface DashboardHeaderProps {
   onOpenAIBreakdown?: () => void;
@@ -21,24 +22,24 @@ export function DashboardHeader({ onOpenAIBreakdown }: DashboardHeaderProps) {
       <div className="container mx-auto px-4 py-4 max-w-7xl">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-1 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-              My Todos
+            <h1 className="text-xl md:text-2xl font-bold mb-1 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+              NextStepHR Todos
             </h1>
             <p className="text-muted-foreground text-sm md:text-base">
               Welcome back,{" "}
-              <span className="font-medium">{user?.email?.split("@")[0]}</span>
+              <span className="font-medium">{user?.user_metadata?.name}</span>
             </p>
           </div>
           <div className="flex items-center gap-2">
             {onOpenAIBreakdown && (
-              <Button
+              <RainbowButton
                 variant="default"
                 onClick={onOpenAIBreakdown}
-                className="w-fit cursor-pointer bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-lg border-0"
+                className="cursor-pointer rounded-md"
               >
                 <Sparkles className="h-4 w-4 mr-2" />
-                Plan with AI
-              </Button>
+                Plan Todos with AI
+              </RainbowButton>
             )}
             <Button
               variant="outline"

@@ -2,7 +2,6 @@ import { useState } from "react";
 import type { Todo } from "@/types";
 import { useUpdateTodo, useDeleteTodo } from "@/hooks/useTodos";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Trash2, Edit2, Calendar, Flag } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -14,6 +13,8 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { priorityColorsConfig } from "@/lib/colors";
+import DopamineCheckbox from "@/components/common/DopamineCheckbox";
 
 interface TodoItemProps {
   todo: Todo;
@@ -52,25 +53,6 @@ export function TodoItem({
     setIsDeleting(false);
   };
 
-  // Priority config
-  const priorityConfig = {
-    low: {
-      color:
-        "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800",
-      icon: "text-blue-600 dark:text-blue-400",
-    },
-    medium: {
-      color:
-        "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800",
-      icon: "text-yellow-600 dark:text-yellow-400",
-    },
-    high: {
-      color:
-        "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800",
-      icon: "text-red-600 dark:text-red-400",
-    },
-  };
-
   // Format date
   const formatDate = (dateString: string | null) => {
     if (!dateString) return null;
@@ -97,7 +79,7 @@ export function TodoItem({
 
   const dateInfo = todo.due_date ? formatDate(todo.due_date) : null;
   const isOverdue = dateInfo?.isOverdue || false;
-  const priority = priorityConfig[todo.priority];
+  const priority = priorityColorsConfig[todo.priority];
 
   return (
     <Card
@@ -113,10 +95,15 @@ export function TodoItem({
         <div className="flex items-start gap-3">
           {/* Checkbox */}
           <div className="mt-0.5">
-            <Checkbox
+            {/* <Checkbox
               checked={todo.completed}
               onCheckedChange={() => handleToggleComplete()}
               className="h-5 w-5 cursor-pointer"
+            /> */}
+
+            <DopamineCheckbox
+              checked={todo.completed}
+              onToggle={() => handleToggleComplete()}
             />
           </div>
 
