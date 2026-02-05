@@ -1,8 +1,13 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
+import { corsHeaders } from "../_shared/cors.ts";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
 
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
   try {
     const { prompt } = await req.json();
 
